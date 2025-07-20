@@ -1,0 +1,5 @@
+rootProject.name="edge-messaging"
+
+include 'messaging-common'
+include 'pos-client-sdk'
+include 'pos-messaging-platform'

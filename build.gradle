@@ -1,0 +1,19 @@
+plugins {
+    id("groovy")
+    id("io.micronaut.application") version "4.5.4" apply false
+    id("com.gradleup.shadow") version "8.3.7" apply false
+    id("io.micronaut.aot") version "4.5.4" apply false
+}
+
+version = "0.1"
+group = "com.example"
+
+repositories {
+    mavenCentral()
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+}

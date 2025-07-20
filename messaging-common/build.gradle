@@ -1,0 +1,15 @@
+plugins {
+    id("java-library")
+    id("io.micronaut.application") version "4.5.4"
+}
+
+dependencies {
+    // Optionally, annotation API for custom annotations:
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+     implementation "io.micronaut:micronaut-inject"
+     implementation "io.micronaut:micronaut-http-client"
+     annotationProcessor "io.micronaut:micronaut-inject-java"
+     implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+}
