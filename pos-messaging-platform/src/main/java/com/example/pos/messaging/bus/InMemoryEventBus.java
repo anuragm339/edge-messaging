@@ -16,7 +16,7 @@ public class InMemoryEventBus implements EventBus {
     private final ExecutorService workers;
 
     @Inject
-    public InMemoryEventBus(@Value("${eventbus.queue-capacity:1000}")int queueCapacity, @Value("${eventbus.worker-threads:4}") int workerThreads) {
+    public InMemoryEventBus(@Value("${eventbus.queue.capacity:1000}")int queueCapacity, @Value("${eventbus.worker.threads:4}") int workerThreads) {
         this.queue = new LinkedBlockingQueue<>(queueCapacity);
         this.workers = Executors.newFixedThreadPool(workerThreads);
 

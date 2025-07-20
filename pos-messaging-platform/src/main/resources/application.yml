@@ -2,11 +2,7 @@ micronaut:
   application:
     name: pos-messaging-platform
 eventbus:
-    queue-capacity: 1000
-    worker-threads: 4
-datasources:
-  default:
-    url: "jdbc:sqlite:/Users/anuragmishra/Downloads/edge-messaging/data/edge-messaging.db"
-    driverClassName: "org.sqlite.JDBC"
-    username: ""
-    password: ""
+    queue:
+      capacity: 1000
+    worke:
+      threads: 4
