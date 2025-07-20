@@ -6,8 +6,7 @@ eventbus:
     worker-threads: 4
 datasources:
   default:
-    url: jdbc:sqlite:./posapp.db
-    driverClassName: org.sqlite.JDBC
-    dialect: SQLITE
-    username: ''
-    password: ''
+    url: "jdbc:sqlite:/Users/anuragmishra/Downloads/edge-messaging/data/edge-messaging.db"
+    driverClassName: "org.sqlite.JDBC"
+    username: ""
+    password: ""

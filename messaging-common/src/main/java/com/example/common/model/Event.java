@@ -1,5 +1,6 @@
 package com.example.common.model;
-
+import io.micronaut.serde.annotation.Serdeable;
+@Serdeable
 public class Event {
     private final String topic;
     private final String type;

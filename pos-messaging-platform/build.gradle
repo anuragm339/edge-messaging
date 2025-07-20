@@ -21,11 +21,11 @@ dependencies {
     runtimeOnly("io.micronaut.configuration:micronaut-jdbc-hikari")
 
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
-    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
+    runtimeOnly("org.xerial:sqlite-jdbc:3.45.3.0")
     implementation("org.slf4j:slf4j-api:2.0.13")
     runtimeOnly("ch.qos.logback:logback-classic:1.5.6")
     implementation("com.fasterxml.jackson.core:jackson-databind")
-
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     // Testing
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.micronaut.test:micronaut-test-junit5")

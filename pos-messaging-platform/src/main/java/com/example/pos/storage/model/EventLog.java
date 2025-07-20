@@ -1,7 +1,10 @@
 package com.example.pos.storage.model;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import java.time.LocalDateTime;
 
+@Serdeable
 public class EventLog {
     private Long id;
     private String topic;
