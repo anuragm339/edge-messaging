@@ -1,6 +1,7 @@
 package com.example.pos.messaging.listener;
 
-import com.example.pos.messaging.model.Event;
+
+import com.example.common.model.Event;
 
 import java.lang.reflect.Method;
 

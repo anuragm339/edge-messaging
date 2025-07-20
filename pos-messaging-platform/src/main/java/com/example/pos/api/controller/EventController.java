@@ -1,10 +1,9 @@
 package com.example.pos.api.controller;
 
 
-import com.example.pos.api.dto.EventRequest;
-import com.example.pos.messaging.model.Event;
-import com.example.pos.messaging.service.EventPublisherService;
-
+import com.example.common.api.EventPublisherService;
+import com.example.common.model.Event;
+import com.example.common.model.EventRequest;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.HttpResponse;
 

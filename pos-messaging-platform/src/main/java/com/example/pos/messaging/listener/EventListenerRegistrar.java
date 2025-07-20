@@ -1,11 +1,10 @@
 package com.example.pos.messaging.listener;
 
-import com.example.pos.messaging.annotation.EventListener;
+import com.example.common.model.Event;
 import com.example.pos.messaging.bus.EventBus;
-import com.example.pos.messaging.model.Event;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Context;
-
+import com.example.common.annotation.EventListener;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
 
@@ -32,7 +31,7 @@ public class EventListenerRegistrar {
             Method[] methods = bean.getClass().getDeclaredMethods();
 
             for (Method method : methods) {
-                if (method.isAnnotationPresent(EventListener.class)) {
+                if (method.isAnnotationPresent( EventListener.class)) {
                     EventListener annotation = method.getAnnotation(EventListener.class);
 
                     // Validation: method should accept single Event param

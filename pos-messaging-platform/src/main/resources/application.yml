@@ -1,0 +1,13 @@
+micronaut:
+  application:
+    name: pos-messaging-platform
+eventbus:
+    queue-capacity: 1000
+    worker-threads: 4
+datasources:
+  default:
+    url: jdbc:sqlite:./posapp.db
+    driverClassName: org.sqlite.JDBC
+    dialect: SQLITE
+    username: ''
+    password: ''

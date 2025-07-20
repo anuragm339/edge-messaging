@@ -18,6 +18,7 @@ dependencies {
     compileOnly("io.micronaut:micronaut-http-client")
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("io.micronaut:micronaut-http-client")
+    runtimeOnly("io.micronaut.configuration:micronaut-jdbc-hikari")
 
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
     implementation("org.xerial:sqlite-jdbc:3.45.3.0")

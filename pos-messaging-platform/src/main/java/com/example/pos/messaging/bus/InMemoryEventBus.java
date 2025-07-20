@@ -1,16 +1,22 @@
 package com.example.pos.messaging.bus;
 
-import com.example.pos.messaging.model.Event;
+
+import com.example.common.model.Event;
+import io.micronaut.context.annotation.Value;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import java.util.concurrent.*;
 import java.util.*;
 
+@Singleton
 public class InMemoryEventBus implements EventBus {
     private final Map<String, CopyOnWriteArrayList<EventConsumer>> listeners = new ConcurrentHashMap<>();
     private final BlockingQueue<Event> queue;
     private final ExecutorService workers;
 
-    public InMemoryEventBus(int queueCapacity, int workerThreads) {
+    @Inject
+    public InMemoryEventBus(@Value("${eventbus.queue-capacity:1000}")int queueCapacity, @Value("${eventbus.worker-threads:4}") int workerThreads) {
         this.queue = new LinkedBlockingQueue<>(queueCapacity);
         this.workers = Executors.newFixedThreadPool(workerThreads);
 

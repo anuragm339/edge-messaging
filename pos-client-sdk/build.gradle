@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     id("io.micronaut.application") version "4.5.4"
+    id 'maven-publish'
 }
 
 dependencies {
@@ -19,4 +20,14 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("io.micronaut:micronaut-http-client")
     // Add more only as truly needed for SDK client logic
+}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()  // Publishes to local ~/.m2/repository
+    }
 }
