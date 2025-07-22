@@ -1,8 +1,9 @@
 plugins {
     id("groovy")
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.5.4" apply false
-    id("com.gradleup.shadow") version "8.3.7" apply false
     id("io.micronaut.aot") version "4.5.4" apply false
+
 }
 
 version = "0.1"
@@ -17,3 +18,25 @@ subprojects {
         mavenCentral()
     }
 }
+allprojects {
+    group = 'com.example'
+    version = '1.0.0'
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        // Additional repositories as needed
+    }
+}
+
+subprojects {
+    // Repositories and plugins can be set here for all modules
+    apply plugin: 'maven-publish'
+
+    publishing {
+        repositories {
+            mavenLocal()
+        }
+        // Optionally common publication config, but component source and artifactId may vary per module.
+    }
+}
+

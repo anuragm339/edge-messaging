@@ -1,9 +1,10 @@
 plugins {
     id("java-library")
     id("io.micronaut.application") version "4.5.4"
+    id("com.github.johnrengelman.shadow")
     id 'maven-publish'
 }
-
+mainClassName=""
 dependencies {
     implementation project(":messaging-common")
     // Optional: annotation processing, HTTP client
@@ -23,11 +24,14 @@ dependencies {
 }
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            from components.java
+        shadow(MavenPublication) {
+            artifact tasks.shadowJar
+            groupId = 'com.example'
+            artifactId = 'pos-client-sdk'
+            version = '1.0.0'
         }
     }
     repositories {
-        mavenLocal()  // Publishes to local ~/.m2/repository
+        mavenLocal()
     }
 }

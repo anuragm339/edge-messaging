@@ -1,8 +1,11 @@
 plugins {
     id("java-library")
     id("io.micronaut.application") version "4.5.4"
+    id 'maven-publish'
+    id("com.github.johnrengelman.shadow")
 }
 
+mainClassName=""
 dependencies {
     // Optionally, annotation API for custom annotations:
     annotationProcessor("io.micronaut:micronaut-http-validation")
@@ -15,4 +18,17 @@ dependencies {
      implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
 
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+}
+publishing {
+    publications {
+        shadow(MavenPublication) {
+            artifact tasks.shadowJar
+            groupId = 'com.example'
+            artifactId = 'messaging-common'
+            version = '1.0.0'
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }
