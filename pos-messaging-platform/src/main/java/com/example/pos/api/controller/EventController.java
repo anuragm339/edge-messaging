@@ -20,7 +20,7 @@ public class EventController {
         this.eventPublisherService = eventPublisherService;
     }
 
-    @Post("/")
+    @Post
     public HttpResponse<?> publish(@Body @Valid EventRequest eventRequest) {
         try {
             Event event = new Event(

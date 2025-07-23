@@ -27,10 +27,15 @@ public class MessagePublisherProxyFactory {
 
     @PostConstruct
     public void init() {
-        context.getAllBeanDefinitions().stream()
-                .map(BeanDefinition::getBeanType)
-                .filter(this::hasMessagePublisherMethods)
-                .forEach(this::processPublisherBean);
+        try {
+            context.getAllBeanDefinitions().stream()
+                    .map(BeanDefinition::getBeanType)
+                    .filter(this::hasMessagePublisherMethods)
+                    .forEach(this::processPublisherBean);
+        }catch (Exception e) {
+            System.err.println("❌ Error during MessagePublisherProxyFactory initialization: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private boolean hasMessagePublisherMethods(Class<?> clazz) {
