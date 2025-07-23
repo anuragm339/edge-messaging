@@ -8,6 +8,7 @@ import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Context;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
+import io.micronaut.inject.BeanDefinition;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -26,22 +27,37 @@ public class MessagePublisherProxyFactory {
 
     @PostConstruct
     public void init() {
-        context.getBeansOfType(Object.class).forEach(bean -> {
-            for (Method method : bean.getClass().getDeclaredMethods()) {
-                if (method.isAnnotationPresent(MessagePublisher.class)) {
-
-                    MessagePublisher annotation = method.getAnnotation(MessagePublisher.class);
-
-                    String topic = annotation.topic();
-                    String type = annotation.eventType().isEmpty() ? method.getName() : annotation.eventType();
-
-                    // Wrap and register, or log that this publisher is active
-                    // In production, you'd register an invocation handler or inject proxy
-                    System.out.println("Registered publisher for topic: " + topic + ", type: " + type);
-                }
-            }
-        });
+        context.getAllBeanDefinitions().stream()
+                .map(BeanDefinition::getBeanType)
+                .filter(this::hasMessagePublisherMethods)
+                .forEach(this::processPublisherBean);
     }
+
+    private boolean hasMessagePublisherMethods(Class<?> clazz) {
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(MessagePublisher.class)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void processPublisherBean(Class<?> beanClass) {
+        Object bean = context.getBean(beanClass);
+        for (Method method : beanClass.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(MessagePublisher.class)) {
+                MessagePublisher annotation = method.getAnnotation(MessagePublisher.class);
+
+                String topic = annotation.topic();
+                String type = annotation.eventType().isEmpty() ? method.getName() : annotation.eventType();
+
+                // In production, you should proxy this interface and connect it with the publisher
+                System.out.printf("✅ Registered publisher from %s#%s for topic='%s', type='%s'%n",
+                        beanClass.getSimpleName(), method.getName(), topic, type);
+            }
+        }
+    }
+
 
     // Optional: create method interceptor using AOP/proxying
     public static Object createProxy(Object original, Method method, MessagePublisher annotation, EventPublisherService publisherService) {

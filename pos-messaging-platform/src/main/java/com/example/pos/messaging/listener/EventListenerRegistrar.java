@@ -1,83 +1,84 @@
 package com.example.pos.messaging.listener;
 
+import com.example.common.annotation.EventListener;
+import com.example.common.model.Event;
 import com.example.pos.messaging.bus.EventBus;
 import io.micronaut.context.ApplicationContext;
-import io.micronaut.context.annotation.Context;
-import com.example.common.annotation.EventListener;
+import io.micronaut.context.BeanContext;
 
-import io.micronaut.inject.qualifiers.Qualifiers;
+import io.micronaut.inject.BeanDefinition;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collection;
 
-@Context
 @Singleton
 public class EventListenerRegistrar {
 
-    private final ApplicationContext context;
+    private static final Logger LOG = LoggerFactory.getLogger(EventListenerRegistrar.class);
+    private final ApplicationContext applicationContext;
     private final EventBus eventBus;
 
-    public EventListenerRegistrar(ApplicationContext context, EventBus eventBus) {
-        this.context = context;
+    public EventListenerRegistrar(ApplicationContext applicationContext, EventBus eventBus) {
+        this.applicationContext = applicationContext;
         this.eventBus = eventBus;
     }
 
     @PostConstruct
     public void registerAllListeners() {
-        Collection<Object> beans;
-        try {
-            beans = context.getBeansOfType(Object.class, Qualifiers.byStereotype(EventListener.class));
-            for (Object bean : beans) {
-                Method[] methods = bean.getClass().getDeclaredMethods();
-                for (Method method : methods) {
-                    if (method.isAnnotationPresent(EventListener.class)) {
-                        EventListener annotation = method.getAnnotation(EventListener.class);
+        LOG.info("🔍 Scanning for @EventListener methods...");
 
-                        if (method.getParameterCount() == 1) {
-                            Class<?> clazz = method.getParameterTypes()[0];
+        Collection<BeanDefinition<?>> allBeanDefs = applicationContext.getAllBeanDefinitions();
 
-                            // Defensive: Skip raw Object.class, interfaces, and types lacking @Serdeable
-                            if (clazz == Object.class) {
-                                System.err.println("Skipping registration for method " + method +
-                                        " because parameter type is raw Object.class (not serializable).");
-                                continue;
-                            }
-                            if (clazz.isInterface()) {
-                                System.err.println("Skipping registration for method " + method +
-                                        " because parameter type " + clazz + " is an interface and not concrete.");
-                                continue;
-                            }
-                            if (!clazz.isAnnotationPresent(Serdeable.class)) {
-                                System.err.println("Skipping registration for method " + method +
-                                        " because parameter type " + clazz +
-                                        " is not annotated with @Serdeable.");
-                                continue;
-                            }
+        for (BeanDefinition<?> beanDef : allBeanDefs) {
+            Class<?> beanClass = beanDef.getBeanType();
+            Method[] declaredMethods = beanClass.getDeclaredMethods();
 
-                            String topic = annotation.topic();
-                            eventBus.subscribe(topic, event -> {
-                                try {
-                                    method.setAccessible(true);
-                                    method.invoke(bean, event);
-                                } catch (Exception e) {
-                                    System.err.println("Error invoking listener on " + bean.getClass() +
-                                            ", method: " + method + ": " + e.getMessage());
-                                }
-                            });
-                        } else {
-                            System.err.println("Listener method " + method +
-                                    " must take exactly one @Serdeable parameter.");
-                        }
-                    }
+            for (Method method : declaredMethods) {
+                EventListener annotation = method.getAnnotation(EventListener.class);
+                if (annotation == null) continue;
+
+                if (method.getParameterCount() != 1) {
+                    LOG.warn("⚠️  Skipping {}#{} - must have exactly one parameter.",
+                            beanClass.getSimpleName(), method.getName());
+                    continue;
                 }
+
+                Class<?> eventType = method.getParameterTypes()[0];
+
+                if (eventType == Object.class || !eventType.isAnnotationPresent(Serdeable.class)) {
+                    LOG.warn("⚠️  Skipping {}#{} - parameter type {} is not @Serdeable or is Object.class.",
+                            beanClass.getSimpleName(), method.getName(), eventType.getSimpleName());
+                    continue;
+                }
+
+                String topic = annotation.topic().trim();
+                if (topic.isEmpty()) {
+                    LOG.warn("⚠️  Skipping {}#{} - empty topic not allowed.",
+                            beanClass.getSimpleName(), method.getName());
+                    continue;
+                }
+
+                Object beanInstance = applicationContext.getBean(beanClass);
+                method.setAccessible(true);
+
+                LOG.info("✅ Registering event handler {}#{} for topic '{}'", beanClass.getSimpleName(), method.getName(), topic);
+
+                // Register with EventBus
+                eventBus.subscribe(topic, (event) -> {
+                    try {
+                        method.invoke(beanInstance, event);
+                    } catch (Exception e) {
+                        LOG.error("❌ Error invoking {}#{}: {}", beanClass.getSimpleName(), method.getName(), e.getMessage(), e);
+                    }
+                });
             }
-        }catch (Exception e) {
-            System.err.println("EventListenerRegistrar: Unable to resolve beans—" + e.getMessage());
         }
 
+        LOG.info("🎉 Event listener registration completed.");
     }
 }
-
